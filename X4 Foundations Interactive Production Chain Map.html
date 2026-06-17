@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X4 基石 · 生产链全景图谱 v9.0</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+SC:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg-base: #141720;
+    --monet-blue: rgba(94, 126, 170, 0.25);
+    --monet-green: rgba(105, 149, 128, 0.25);
+    --monet-pink: rgba(173, 121, 135, 0.25);
+    --monet-gold: rgba(212, 175, 55, 0.15);
+
+    --mucha-gold: #d4af37;
+    --mucha-light-gold: #f9e596;
+    --mucha-dark-gold: #8c7322;
+    --mucha-bronze: #b07a44;
+    --mucha-panel: rgba(20, 23, 32, 0.85);
+
+    --text-main: #f3e5ab;
+    --text-dim: #b8a97b;
+
+    --raw-bg: linear-gradient(135deg, rgba(44,62,53,0.8), rgba(30,43,37,0.8));
+    --raw-bdr: #699580;
+    --raw-glow: #a3d4bd;
+
+    --mid-bg: linear-gradient(135deg, rgba(43,58,85,0.8), rgba(30,38,56,0.8));
+    --mid-bdr: #5e7eaa;
+    --mid-glow: #96b9e5;
+
+    --fin-bg: linear-gradient(135deg, rgba(74,50,61,0.8), rgba(51,34,42,0.8));
+    --fin-bdr: #ad7987;
+    --fin-glow: #e5b0c0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    font-family: 'Noto Serif SC', 'Cinzel', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image:
+      radial-gradient(circle at 15% 25%, var(--monet-blue) 0%, transparent 45%),
+      radial-gradient(circle at 85% 15%, var(--monet-pink) 0%, transparent 50%),
+      radial-gradient(circle at 50% 85%, var(--monet-green) 0%, transparent 55%),
+      radial-gradient(circle at 80% 80%, var(--monet-gold) 0%, transparent 40%);
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(var(--mucha-dark-gold) 0.5px, transparent 0.5px);
+    background-size: 30px 30px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 2px solid var(--mucha-dark-gold);
+    background: linear-gradient(180deg, var(--mucha-panel) 0%, transparent 100%);
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .logo {
+    font-family: 'Cinzel', serif;
+    font-size: 26px; font-weight: 700;
+    letter-spacing: 6px; color: var(--mucha-light-gold);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+  }
+  .logo span { font-family: 'Noto Serif SC', serif; font-size: 22px; letter-spacing: 4px;}
+  .logo-sub { 
+    font-family: 'Cinzel', serif;
+    font-size: 12px; letter-spacing: 4px; 
+    color: var(--text-dim); margin-top: 4px; 
+  }
+
+  .lang-switch-container {
+    display: flex;
+    align-items: center;
+    background: rgba(20, 23, 32, 0.9);
+    border: 1px solid var(--mucha-gold);
+    outline: 1px solid var(--mucha-gold);
+    outline-offset: -4px;
+    padding: 3px 6px;
+    border-radius: 14px 4px 14px 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 101;
+    user-select: none;
+    transition: all 0.3s ease;
+    gap: 4px;
+  }
+  .lang-item {
+    color: var(--text-dim);
+    font-family: 'Noto Serif SC', 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 5px 10px;
+    border-radius: 10px 2px 10px 2px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .lang-item.active {
+    color: var(--bg-base);
+    background: var(--mucha-light-gold);
+    font-weight: 700;
+  }
+
+  .legend {
+    display: flex; gap: 36px; align-items: center; justify-content: center;
+    padding: 14px 40px;
+    background: rgba(20, 23, 32, 0.6);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    font-size: 13px; letter-spacing: 2px;
+    position: relative; z-index: 10;
+    backdrop-filter: blur(5px);
+  }
+  .ldot {
+    display: inline-block; width: 12px; height: 12px;
+    border-radius: 50%; border: 1.5px solid; margin-right: 8px;
+    vertical-align: middle;
+  }
+  .ldot.r { border-color: var(--raw-glow); background: var(--raw-bdr); }
+  .ldot.m { border-color: var(--mid-glow); background: var(--mid-bdr); }
+  .ldot.f { border-color: var(--fin-glow); background: var(--fin-bdr); }
+
+  #wrap {
+    position: relative;
+    padding: 40px 40px 80px;
+    min-height: calc(100vh - 120px);
+  }
+
+  svg#svg {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 1;
+    overflow: visible;
+  }
+
+  .nodes { position: relative; z-index: 2; }
+  .layer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: nowrap;
+  }
+
+  .layer-raw  { margin-top: 15px; }
+  .layer-mid1 { margin-top: 60px; }
+  .layer-mid2 { margin-top: 50px; }
+  .layer-fin  { margin-top: 70px; }
+
+  .node {
+    position: relative;
+    width: 145px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid var(--mucha-gold);
+    outline: 1px solid var(--mucha-gold);
+    outline-offset: -4px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    user-select: none;
+    white-space: normal;
+    word-break: break-word;
+    border-radius: 18px 4px 18px 4px;
+    background: var(--bg-base);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  }
+
+  .node.raw { background: var(--raw-bg); color: #e0eee6; outline-color: var(--raw-bdr); border-color: var(--raw-bdr); }
+  .node.mid { background: var(--mid-bg); color: #e6eeea; outline-color: var(--mid-bdr); border-color: var(--mid-bdr); }
+  .node.fin { background: var(--fin-bg); color: #eee0e4; outline-color: var(--fin-bdr); border-color: var(--fin-bdr); }
+
+  .node:hover { transform: translateY(-4px); z-index: 10; }
+  .node.active {
+    transform: translateY(-5px) scale(1.05);
+    z-index: 20;
+    border-color: var(--mucha-light-gold);
+    outline-color: var(--mucha-light-gold);
+    color: var(--mucha-light-gold);
+    border-radius: 4px 18px 4px 18px;
+  }
+
+  .node.upstream {
+    animation: upPulse 2s ease-in-out infinite alternate;
+    z-index: 15;
+    border-color: var(--mucha-gold);
+  }
+  @keyframes upPulse {
+    from { box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+    to   { box-shadow: 0 0 25px rgba(212, 175, 55, 0.5); }
+  }
+
+  .node.dimmed { opacity: 0.15; filter: grayscale(0.8) blur(0.5px); pointer-events: none; }
+
+  .eline { stroke: var(--mucha-dark-gold); stroke-width: 1.5; fill: none; transition: all 0.3s; opacity: 0.5; }
+  .eline.hl-active {
+    stroke: var(--mucha-light-gold); stroke-width: 3; opacity: 1;
+    filter: drop-shadow(0 0 6px var(--mucha-gold));
+  }
+  .eline.hl-upstream {
+    stroke: var(--mucha-gold); stroke-width: 2; opacity: 0.8;
+    stroke-dasharray: 6 4;
+    animation: dashFlow 1s linear infinite;
+  }
+  @keyframes dashFlow { to { stroke-dashoffset: -20; } }
+
+  #info {
+    position: fixed; bottom: 40px; right: 40px;
+    width: 350px;
+    background: var(--mucha-panel);
+    border: 2px solid var(--mucha-gold);
+    outline: 1px solid var(--mucha-gold);
+    outline-offset: -6px;
+    padding: 22px 24px;
+    font-size: 13px; z-index: 200;
+    transform: translateY(20px); opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    border-radius: 20px 4px 20px 4px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    max-height: 75vh;
+    overflow-y: auto;
+  }
+  #info.vis { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  
+  #info-title {
+    font-family: 'Noto Serif SC', serif; font-size: 20px; font-weight: 700;
+    color: var(--mucha-light-gold); border-bottom: 1px solid rgba(212,175,55,0.3);
+    padding-bottom: 6px; margin-bottom: 4px; text-align: center;
+  }
+  #info-type { font-size: 11px; color: var(--text-dim); text-align: center; margin-bottom: 12px; }
+  
+  .info-meta-item { margin: 4px 0; color: var(--text-main); line-height: 1.5; }
+  .info-meta-item span { color: var(--text-dim); }
+
+  .info-section { font-size: 13px; color: var(--mucha-light-gold); margin: 14px 0 6px; font-weight: 600; border-left: 2px solid var(--mucha-gold); padding-left: 6px; }
+  #info-calc-list { display: flex; flex-direction: column; gap: 4px; }
+  .calc-row { display: flex; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 4px 8px; border-radius: 4px; align-items: center; gap: 8px; }
+  .calc-num { color: var(--mucha-light-gold); font-family: monospace; font-size: 12px; white-space: nowrap; }
+
+  #reset {
+    position: fixed; top: 25px; right: 540px;
+    background: rgba(20, 23, 32, 0.8); border: 1px solid var(--mucha-gold);
+    color: var(--mucha-gold); font-family: 'Noto Serif SC', serif;
+    font-size: 13px; padding: 8px 20px; cursor: pointer; z-index: 300;
+    transition: all 0.3s; border-radius: 14px 4px 14px 4px; display: none;
+  }
+  #reset:hover { color: var(--bg-base); background: var(--mucha-gold); }
+  #reset.vis { display: block; }
+
+  .disclaimer { font-size: 10px; color: #887a55; text-align: center; margin-top: 10px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">X4 <span id="logo-cn">基石</span></div>
+    <div class="logo-sub">Foundations · Production Chain</div>
+  </div>
+  <div class="lang-switch-container" id="lang-container">
+    <div class="lang-item" id="item-lang-en" onclick="setLanguage('en', event)">EN</div>
+    <div class="lang-item" id="item-lang-zh" onclick="setLanguage('zh', event)">中文</div>
+    <div class="lang-item" id="item-lang-ko" onclick="setLanguage('ko', event)">KO</div>
+    <div class="lang-item" id="item-lang-ja" onclick="setLanguage('ja', event)">JA</div>
+    <div class="lang-item" id="item-lang-ru" onclick="setLanguage('ru', event)">RU</div>
+    <div class="lang-item" id="item-lang-es" onclick="setLanguage('es', event)">ES</div>
+    <div class="lang-item" id="item-lang-de" onclick="setLanguage('de', event)">DE</div>
+    <div class="lang-item" id="item-lang-fr" onclick="setLanguage('fr', event)">FR</div>
+  </div>
+</header>
+
+<div class="legend" id="page-legend">
+  <span><span class="ldot r"></span><span class="txt">—</span></span>
+  <span><span class="ldot m"></span><span class="txt">—</span></span>
+  <span><span class="ldot f"></span><span class="txt">—</span></span>
+</div>
+
+<div id="wrap">
+  <svg id="svg"></svg>
+  <div class="nodes">
+
+    <div class="layer layer-raw">
+      <div class="node raw" id="n-ore">—</div>
+      <div class="node raw" id="n-silicon">—</div>
+      <div class="node raw" id="n-hydrogen">—</div>
+      <div class="node raw" id="n-methane">—</div>
+      <div class="node raw" id="n-helium">—</div>
+    </div>
+
+    <div class="layer layer-mid1">
+      <div class="node mid" id="n-refmetal">—</div>
+      <div class="node mid" id="n-siwafer">—</div>
+      <div class="node mid" id="n-anticell">—</div>
+      <div class="node mid" id="n-graphene">—</div>
+      <div class="node mid" id="n-coolant">—</div>
+    </div>
+
+    <div class="layer layer-mid2">
+      <div class="node mid" id="n-engine">—</div>
+      <div class="node mid" id="n-microchip">—</div>
+      <div class="node mid" id="n-smartchip">—</div>
+      <div class="node mid" id="n-scanarray">—</div>
+      <div class="node mid" id="n-composite">—</div>
+      <div class="node mid" id="n-hull">—</div>
+      <div class="node mid" id="n-qtube">—</div>
+      <div class="node mid" id="n-plasma">—</div>
+    </div>
+
+    <div class="layer layer-fin">
+      <div class="node fin" id="n-anticonv">—</div>
+      <div class="node fin" id="n-advelectro">—</div>
+      <div class="node fin" id="n-missile">—</div>
+      <div class="node fin" id="n-weapon">—</div>
+      <div class="node fin" id="n-coil">—</div>
+      <div class="node fin" id="n-shield">—</div>
+      <div class="node fin" id="n-clay">—</div>
+      <div class="node fin" id="n-turret">—</div>
+      <div class="node fin" id="n-drone">—</div>
+    </div>
+
+  </div>
+</div>
+
+<div id="info">
+  <div id="info-title">—</div>
+  <div id="info-type">—</div>
+  <div class="info-meta-item" id="info-prod"><span>—: </span>—</div>
+  
+  <div class="info-section" id="info-sec-title">—</div>
+  <div id="info-calc-list"></div>
+  <div class="disclaimer" id="info-disc">—</div>
+</div>
+
+<button id="reset" onclick="resetAll()">—</button>
+
+<script>
+const langOrder = ['en', 'zh', 'ko', 'ja', 'ru', 'es', 'de', 'fr'];
+let currentLang = localStorage.getItem('x4_lang') || 'en';
+
+const i18n = {
+  zh: {
+    legendRaw: "原材料", legendMid: "中间产物", legendFin: "最终产物",
+    typeRaw: "原材料", typeMid: "中间产物", typeFin: "最终产物",
+    resetBtn: "✕ 清除选中", secTitle: "上游所需制造模块数量",
+    disc: "注：生产链级联计算逻辑已根据用户提供的 v9.0 最简版数据完成更新。",
+    metaProd: "单厂基础产量", metaTotal: "总预估产量", hour: "小时",
+    rawTips: "自然生成原材料，无工厂建设模块", noSub: "暂无次级工厂模块需求",
+    totalConsume: "每小时总消耗", need: "需", rec: "荐"
+  },
+  en: {
+    legendRaw: "Raw Materials", legendMid: "Intermediate Products", legendFin: "Final Products",
+    typeRaw: "Raw Materials", typeMid: "Intermediate Products", typeFin: "Final Products",
+    resetBtn: "✕ Clear Selection", secTitle: "Required Upstream Factory Modules",
+    disc: "Note: The production chain logic has been updated based on v9.0 database.",
+    metaProd: "Base Rate", metaTotal: "Total Rate", hour: "hr",
+    rawTips: "Naturally generated resource. No production module required.",
+    noSub: "No secondary module demands required.",
+    totalConsume: "Total Hourly Consumption", need: "Need", rec: "Rec"
+  },
+  ko: {
+    legendRaw: "원자재", legendMid: "중간 생산물", legendFin: "최종 생산물",
+    typeRaw: "원자재", typeMid: "중간 생산물", typeFin: "최종 생산물",
+    resetBtn: "✕ 선택 해제", secTitle: "필요한 업스트림 팩토리 모듈 수",
+    disc: "참고: 생산 체인 계산 논리는 v9.0 데이터베이스를 기반으로 업데이트되었습니다.",
+    metaProd: "공장 기본 생산량", metaTotal: "예상 총 생산량", hour: "시간",
+    rawTips: "자연 생성 원자재, 공장 건설 모듈 없음", noSub: "하위 공장 모듈 요구 사항 없음",
+    totalConsume: "시간당 총 소비량", need: "필요", rec: "추천"
+  },
+  ja: {
+    legendRaw: "原材料", legendMid: "中間生成物", legendFin: "最終生成物",
+    typeRaw: "原材料", typeMid: "中間生成物", typeFin: "最終生成物",
+    resetBtn: "✕ 選択解除", secTitle: "上流に必要な制造モジュール数",
+    disc: "注：生産チェーンの連鎖計算ロジックはv9.0データベースに基づいて更新されました。",
+    metaProd: "単一工場の基礎生産量", metaTotal: "予想総生産量", hour: "時間",
+    rawTips: "自然生成される原材料、工場建設モジュールなし", noSub: "次段階の工場モジュール要求なし",
+    totalConsume: "1時間あたりの総消費量", need: "必要", rec: "推奨"
+  },
+  ru: {
+    legendRaw: "Сырье", legendMid: "Промежуточные продукты", legendFin: "Конечные продукты",
+    typeRaw: "Сырье", typeMid: "Промежуточный продукт", typeFin: "Конечный продукт",
+    resetBtn: "✕ Сбросить выбор", secTitle: "Необходимые производственные модули",
+    disc: "Прим.: Логика каскадного расчета основана на базе данных версии 9.0.",
+    metaProd: "Базовая производительность", metaTotal: "Общая прогнозируемая мощность", hour: "ч",
+    rawTips: "Природный ресурс. Производственный модуль не требуется.", noSub: "Нет требований к вторичным модулям",
+    totalConsume: "Общее потребление в час", need: "Потр", rec: "Реком"
+  },
+  es: {
+    legendRaw: "Materias primas", legendMid: "Productos intermedios", legendFin: "Productos finales",
+    typeRaw: "Materias primas", typeMid: "Producto intermedio", typeFin: "Producto final",
+    resetBtn: "✕ Limpiar selección", secTitle: "Módulos de fábrica ascendentes requeridos",
+    disc: "Nota: La lógica de la cadena se ha actualizado en función de la base de datos v9.0.",
+    metaProd: "Rendimiento básico", metaTotal: "Rendimiento total estimado", hour: "unidad/h",
+    rawTips: "Recurso natural. No requiere módulo de producción.", noSub: "Sin demandas de módulos secundarios",
+    totalConsume: "Consumo horario total", need: "Req", rec: "Recom"
+  },
+  de: {
+    legendRaw: "Rohstoffe", legendMid: "Zwischenprodukte", legendFin: "Endprodukte",
+    typeRaw: "Rohstoffe", typeMid: "Zwischenprodukt", typeFin: "Endprodukt",
+    resetBtn: "✕ Auswahl aufheben", secTitle: "Erforderliche Upstream-Fabrikmodule",
+    disc: "Hinweis: Die Produktionskettenlogik wurde auf Basis der v9.0-Datenbank aktualisiert.",
+    metaProd: "Basisproduktionsrate", metaTotal: "Geschätzte Gesamtleistung", hour: "Std",
+    rawTips: "Natürliche Ressource. Kein Produktionsmodul erforderlich.", noSub: "Keine sekundären Modulanforderungen",
+    totalConsume: "Gesamtverbrauch pro Stunde", need: "Ben", rec: "Empf"
+  },
+  fr: {
+    legendRaw: "Matières premières", legendMid: "Produits intermédiaires", legendFin: "Produits finaux",
+    typeRaw: "Matières premières", typeMid: "Produit intermédiaire", typeFin: "Produit final",
+    resetBtn: "✕ Effacer la sélection", secTitle: "Modules d'usine en amont requis",
+    disc: "Note : La logique de calcul est mise à jour selon la base de données v9.0.",
+    metaProd: "Rendement de base", metaTotal: "Rendement total estimado", hour: "heure",
+    rawTips: "Ressource naturelle. Aucun module de production requis.", noSub: "Aucune demande de module secondaire",
+    totalConsume: "Consommation horaire totale", need: "Req", rec: "Recom"
+  }
+};
+
+const edges = [
+  ['n-ore', 'n-refmetal'], ['n-silicon', 'n-siwafer'], ['n-hydrogen', 'n-anticell'], ['n-methane', 'n-graphene'], ['n-helium', 'n-coolant'],
+  ['n-anticell', 'n-engine'], ['n-refmetal', 'n-engine'], ['n-siwafer', 'n-microchip'], ['n-siwafer', 'n-smartchip'], ['n-refmetal', 'n-scanarray'],
+  ['n-siwafer', 'n-scanarray'], ['n-graphene', 'n-composite'], ['n-refmetal', 'n-composite'], ['n-graphene', 'n-hull'], ['n-refmetal', 'n-hull'],
+  ['n-graphene', 'n-qtube'], ['n-coolant', 'n-qtube'], ['n-graphene', 'n-plasma'], ['n-coolant', 'n-plasma'], ['n-composite', 'n-anticonv'],
+  ['n-microchip', 'n-anticonv'], ['n-microchip', 'n-advelectro'], ['n-qtube', 'n-advelectro'], ['n-composite', 'n-missile'], ['n-hull', 'n-missile'],
+  ['n-hull', 'n-weapon'], ['n-plasma', 'n-weapon'], ['n-qtube', 'n-coil'], ['n-plasma', 'n-coil'], ['n-plasma', 'n-shield'],
+  ['n-qtube', 'n-shield'], ['n-microchip', 'n-clay'], ['n-qtube', 'n-clay'], ['n-anticell', 'n-clay'], ['n-scanarray', 'n-turret'],
+  ['n-qtube', 'n-turret'], ['n-microchip', 'n-turret'], ['n-microchip', 'n-drone'], ['n-scanarray', 'n-drone'], ['n-hull', 'n-drone'], ['n-engine', 'n-drone']
+];
+
+const meta = {
+  'n-ore':       { type:'raw', names: {zh:'矿石', en:'Ore', ko:'원자재 (광석)', ja:'鉱石', ru:'Руда', es:'Mineral de hierro', de:'Erz', fr:'Minerai'} },
+  'n-silicon':   { type:'raw', names: {zh:'硅', en:'Silicon', ko:'실리콘', ja:'シリコン', ru:'Кремний', es:'Silicio', de:'Silizium', fr:'Silicium'} },
+  'n-hydrogen':  { type:'raw', names: {zh:'氢', en:'Hydrogen', ko:'수소', ja:'水素', ru:'Водород', es:'Hidrógeno', de:'Wasserstoff', fr:'Hydrogène'} },
+  'n-methane':   { type:'raw', names: {zh:'甲烷', en:'Methane', ko:'메탄', ja:'メタン', ru:'Метан', es:'Metano', de:'Methan', fr:'Méthane'} },
+  'n-helium':    { type:'raw', names: {zh:'氦', en:'Helium', ko:'헬륨', ja:'ヘリウム', ru:'Гелий', es:'Helio', de:'Helium', fr:'Hélium'} },
+  
+  'n-refmetal':  { type:'mid', prodRate:2112, consumes:{ 'n-ore':5760 },  names: {zh:'精炼金属', en:'Refined Metals', ko:'정련된 금속', ja:'精錬金属', ru:'Очищенные металлы', es:'Metales refinados', de:'Veredelte Metalle', fr:'Métaux raffinés'} },
+  'n-siwafer':   { type:'mid', prodRate:2140, consumes:{ 'n-silicon':4800 }, names: {zh:'硅晶片', en:'Silicon Wafers', ko:'실리콘 웨이퍼', ja:'シリコンウェーハ', ru:'Кремниевые plastic', es:'Obleas de silicio', de:'Siliziumscheiben', fr:'Tranches de silisium'} },
+  'n-anticell':  { type:'mid', prodRate:2970, consumes:{ 'n-hydrogen':9600 }, names: {zh:'反物质电池', en:'Antimatter Cells', ko:'반물질 셀', ja:'反物質セル', ru:'Элементы антиматерии', es:'Células de antimateria', de:'Antimaterie-Zellen', fr:"Cellules d'antimatière"} },
+  'n-graphene':  { type:'mid', prodRate:1440, consumes:{ 'n-methane':4800 },  names: {zh:'石墨烯', en:'Graphene', ko:'그래핀', ja:'グラフェン', ru:'Графен', es:'Grafeno', de:'Graphen', fr:'Graphène'} },
+  'n-coolant':   { type:'mid', prodRate:1425, consumes:{ 'n-helium':4800 },   names: {zh:'超流体冷却剂', en:'Superfluid Coolant', ko:'초유체 냉각제', ja:'超流動冷却材', ru:'Сверхтекучий хладагент', es:'Refrigerante superfluido', de:'Superflüssiges Kühlmittel', fr:'Liquide de refroidissement superfluide'} },
+  
+  'n-engine':    { type:'mid', prodRate:832,  consumes:{ 'n-refmetal':384, 'n-anticell':320 },  names: {zh:'引擎部件', en:'Engine Parts', ko:'엔진 부품', ja:'エンジン部品', ru:'Детали двигателей', es:'Componentes de motor', de:'Triebwerksteile', fr:'Pièces de moteur'} },
+  'n-microchip': { type:'mid', prodRate:432,  consumes:{ 'n-siwafer':1200 }, names: {zh:'微芯片', en:'Microchips', ko:'마이크로칩', ja:'マイクロチップ', ru:'Микросхемы', es:'Microchips', de:'Mikrochips', fr:'Micropuces'} },
+  'n-smartchip': { type:'mid', prodRate:858,  consumes:{ 'n-siwafer':120 },  names: {zh:'智能芯片', en:'Smart Chips', ko:'스마트 칩', ja:'スマートチップ', ru:'Интеллектуальные чипы', es:'Chips inteligentes', de:'Intelligente Chips', fr:'Puces intelligentes'} },
+  'n-scanarray': { type:'mid', prodRate:216,  consumes:{ 'n-refmetal':600, 'n-siwafer':360 },   names: {zh:'扫描阵列', en:'Scanning Array', ko:'스캔 어レイ', ja:'スキャンアレイ', ru:'Сканирующая матрица', es:'Matriz de escaneo', de:'Scanner-Array', fr:'Réseau de scanners'} },
+  'n-composite': { type:'mid', prodRate:648,  consumes:{ 'n-refmetal':960, 'n-graphene':960 },  names: {zh:'先进复合材料', en:'Advanced Composites', ko:'첨단 복합 재료', ja:'先進複合材', ru:'Улучшенные композиты', es:'Compuestos avanzados', de:'Fortschrittliche Verbundstoffe', fr:'Composites avancés'} },
+  'n-hull':      { type:'mid', prodRate:1176, consumes:{ 'n-refmetal':1120, 'n-graphene':160 }, names: {zh:'船体部件', en:'Hull Parts', ko:'선체 부품', ja:'船体部品', ru:'Детали корпуса', es:'Partes del casco', de:'Hüllenteile', fr:'Pièces de coque'} },
+  'n-qtube':     { type:'mid', prodRate:470,  consumes:{ 'n-graphene':580, 'n-coolant':150 },   names: {zh:'量子管', en:'Quantum Tubes', ko:'양자관', ja:'量子管', ru:'Квантовые трубки', es:'Tubos cuánticos', de:'Quantenröhren', fr:'Tubes quantiques'} },
+  'n-plasma':    { type:'mid', prodRate:176,  consumes:{ 'n-graphene':384, 'n-coolant':560 },   names: {zh:'等离子导体', en:'Plasma Conductors', ko:'플라즈마 도체', ja:'プラズма導体', ru:'Плазменные проводники', es:'Conductores de plasma', de:'Plasmaleiter', fr:'Conducteurs de plasma'} },
+  
+  'n-anticonv':  { type:'fin', prodRate:1596, consumes:{ 'n-composite':240, 'n-microchip':360 }, names: {zh:'反物质转换器', en:'Antimatter Converters', ko:'반물질 변환기', ja:'反物質コンバーター', ru:'Преобразователи антиматерии', es:'Convertidores de antimateria', de:'Antimaterie-Konverter', fr:"Convertisseurs d'antimatière"} },
+  'n-advelectro':{ type:'fin', prodRate:270,  consumes:{ 'n-microchip':220, 'n-qtube':100 },     names: {zh:'先进电子设备', en:'Advanced Electronics', ko:'첨단 전자 기기', ja:'先進電子機器', ru:'Улучшенная электроника', es:'Electrónica avanzada', de:'Fortschrittliche Elektronik', fr:'Électronique avancée'} },
+  'n-missile':   { type:'fin', prodRate:1124, consumes:{ 'n-composite':8, 'n-hull':8 },          names: {zh:'导弹组件', en:'Missile Components', ko:'미사일 부품', ja:'ミサイルコンポーネント', ru:'Компоненты ракет', es:'Componentes de misiles', de:'Raketenkomponenten', fr:'Composants de missiles'} },
+  'n-weapon':    { type:'fin', prodRate:340,  consumes:{ 'n-hull':40, 'n-plasma':60 },          names: {zh:'武器组件', en:'Weapon Components', ko:'무기 부품', ja:'武器コンポーネント', ru:'Компоненты оружия', es:'Componentes de armas', de:'Waffenkomponenten', fr:"Composants d'armes"} },
+  'n-coil':      { type:'fin', prodRate:1050, consumes:{ 'n-plasma':240, 'n-qtube':258 },        names: {zh:'励磁线圈', en:'Field Coils', ko:'자장 코일', ja:'フィールドコイル', ru:'Катушки возбуждения', es:'Bobinas de campo', de:'Feldspulen', fr:'Bobines de champ'} },
+  'n-shield':    { type:'fin', prodRate:579,  consumes:{ 'n-plasma':60, 'n-qtube':60 },          names: {zh:'护盾组件', en:'Shield Components', ko:'보호막 부품', ja:'シールドコンポーネント', ru:'Компоненты щитов', es:'Componentes de escudos', de:'Schildkomponenten', fr:'Composants de boucliers'} },
+  'n-clay':      { type:'fin', prodRate:432,  consumes:{ 'n-microchip':640, 'n-qtube':400, 'n-anticell':400 }, names: {zh:'粘土晶体', en:'Claytronics', ko:'클레이트로닉스', ja:'クレイトロニクス', ru:'Клейтроника', es:'Claytrónica', de:'Claytronics', fr:'Claytronique'} },
+  'n-turret':    { type:'fin', prodRate:340,  consumes:{ 'n-scanarray':20, 'n-qtube':40, 'n-microchip':40 },   names: {zh:'炮台组件', en:'Turret Components', ko:'포탑 부품', ja:'タレットコンポーネント', ru:'Компоненты турелей', es:'Componentes de torretas', de:'Geschützturmkomponenten', fr:'Composants de tourelles'} },
+  'n-drone':     { type:'fin', prodRate:315,  consumes:{ 'n-microchip':60, 'n-scanarray':120, 'n-hull':60, 'n-engine':60 }, names: {zh:'无人机组件', en:'Drone Components', ko:'드론 부품', ja:'ドローンコンポーネント', ru:'Компоненты дронов', es:'Componentes de drones', de:'Drohnenkomponenten', fr:'Composants de drones'} }
+};
+
+let sel = null;
+let selQty = 0;
+const svg  = document.getElementById('svg');
+const wrap = document.getElementById('wrap');
+let edgeEls = [];
+
+function setLanguage(lang, event) {
+  if (event) event.stopPropagation();
+
+  currentLang = lang;
+  localStorage.setItem('x4_lang', currentLang);
+  updateUILabels();
+  
+  drawEdges();
+  if (sel) {
+    const tempSel = sel;
+    const tempQty = selQty;
+    resetAll();
+    select(tempSel);
+    selQty = tempQty;
+    showInfo(tempSel, tempQty);
+  }
+}
+
+function updateUILabels() {
+  const ln = i18n[currentLang];
+  
+  document.querySelectorAll('.lang-item').forEach(item => item.classList.remove('active'));
+  document.getElementById(`item-lang-${currentLang}`).classList.add('active');
+
+  document.getElementById('logo-cn').style.display = currentLang === 'zh' ? 'inline' : 'none';
+  document.getElementById('reset').textContent = ln.resetBtn;
+  document.getElementById('info-sec-title').textContent = ln.secTitle;
+  document.getElementById('info-disc').textContent = ln.disc;
+
+  const legendSpans = document.getElementById('page-legend').querySelectorAll('span.txt');
+  legendSpans[0].textContent = ln.legendRaw;
+  legendSpans[1].textContent = ln.legendMid;
+  legendSpans[2].textContent = ln.legendFin;
+
+  document.querySelectorAll('.node').forEach(nodeEl => {
+    const data = meta[nodeEl.id];
+    if (data) {
+      nodeEl.innerHTML = data.names[currentLang] || data.names['en'];
+    }
+  });
+}
+
+function calculateDemands(targetId, quantity) {
+  const demands = {}; 
+  const targetMeta = meta[targetId];
+  if (!targetMeta || !targetMeta.prodRate) return demands;
+
+  const queue = [{ id: targetId, neededRate: targetMeta.prodRate * quantity }];
+
+  while (queue.length > 0) {
+    const { id, neededRate } = queue.shift();
+    const currentMeta = meta[id];
+    if (!currentMeta) continue;
+
+    if (id !== targetId) {
+      if (!demands[id]) demands[id] = 0;
+      demands[id] += neededRate;
+    }
+
+    const currentModulesNeeded = neededRate / (currentMeta.prodRate || 1);
+
+    if (currentMeta.consumes) {
+      for (const [inputId, consumeAmount] of Object.entries(currentMeta.consumes)) {
+        if (meta[inputId] && meta[inputId].prodRate) {
+          const inputRequiredRate = currentModulesNeeded * consumeAmount;
+          queue.push({ id: inputId, neededRate: inputRequiredRate });
+        }
+      }
+    }
+  }
+
+  const moduleCounts = {};
+  for (const [id, totalRate] of Object.entries(demands)) {
+    if (meta[id].prodRate) {
+      moduleCounts[id] = (totalRate / meta[id].prodRate).toFixed(2);
+    }
+  }
+  return moduleCounts;
+}
+
+function upstream(target) {
+  const parents = {};
+  for (const [f,t] of edges) {
+    if (!parents[t]) parents[t] = [];
+    parents[t].push(f);
+  }
+  const vis = new Set();
+  const q = [target];
+  while (q.length) {
+    const cur = q.shift();
+    for (const p of (parents[cur]||[])) {
+      if (!vis.has(p)) { vis.add(p); q.push(p); }
+    }
+  }
+  return vis;
+}
+
+function center(el) {
+  const wr = wrap.getBoundingClientRect();
+  const r  = el.getBoundingClientRect();
+  return {
+    x: r.left - wr.left + r.width/2,
+    y: r.top  - wr.top  + r.height/2,
+    top:    r.top    - wr.top,
+    bottom: r.bottom - wr.top,
+  };
+}
+
+function drawEdges() {
+  svg.innerHTML = '';
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML = `
+    <marker id="ad" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,1 L0,5 L6,3 z" fill="#8c7322"/>
+    </marker>
+    <marker id="aa" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,1 L0,5 L6,3 z" fill="#f9e596"/>
+    </marker>
+    <marker id="au" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,1 L0,5 L6,3 z" fill="#d4af37"/>
+    </marker>
+  `;
+  svg.appendChild(defs);
+
+  edgeEls = [];
+  for (const [from,to] of edges) {
+    const fe = document.getElementById(from);
+    const te = document.getElementById(to);
+    if (!fe || !te) continue;
+
+    const f = center(fe), t = center(te);
+    const fx = f.x, fy = f.bottom - 4;
+    const tx = t.x, ty = t.top    + 4;
+    const dy = ty - fy;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('class','eline');
+    path.setAttribute('marker-end','url(#ad)');
+    path.setAttribute('d',`M ${fx} ${fy} C ${fx} ${fy+dy*.5}, ${tx} ${ty-dy*.5}, ${tx} ${ty}`);
+    path.dataset.from = from; path.dataset.to = to;
+    svg.appendChild(path);
+    edgeEls.push({ from, to, el: path });
+  }
+}
+
+function resetAll() {
+  document.querySelectorAll('.node').forEach(n =>
+    n.classList.remove('active','upstream','dimmed'));
+  for (const e of edgeEls) {
+    e.el.classList.remove('hl-active','hl-upstream');
+    e.el.setAttribute('marker-end','url(#ad)');
+  }
+  sel = null;
+  selQty = 0;
+  document.getElementById('info').classList.remove('vis');
+  document.getElementById('reset').classList.remove('vis');
+}
+
+function select(id) {
+  const targetMeta = meta[id];
+  
+  if (!targetMeta.prodRate) {
+    resetAll();
+    sel = id;
+    selQty = 1;
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.node').forEach(n => {
+      if (n.id !== id) n.classList.add('dimmed');
+    });
+    showInfo(id, selQty);
+    return;
+  }
+
+  if (sel === id) {
+    selQty++;
+  } else {
+    resetAll();
+    sel = id;
+    selQty = 1;
+  }
+
+  const up = upstream(id);
+
+  document.querySelectorAll('.node').forEach(n => {
+    if (n.id === id)       n.classList.add('active');
+    else if (up.has(n.id)) n.classList.add('upstream');
+    else                   n.classList.add('dimmed');
+  });
+
+  for (const e of edgeEls) {
+    const toSel   = e.to === id && up.has(e.from);
+    const upChain = up.has(e.from) && up.has(e.to);
+    if (toSel) {
+      e.el.classList.add('hl-active');
+      e.el.setAttribute('marker-end','url(#aa)');
+    } else if (upChain) {
+      e.el.classList.add('hl-upstream');
+      e.el.setAttribute('marker-end','url(#au)');
+    }
+  }
+
+  showInfo(id, selQty);
+}
+
+function showInfo(id, qty) {
+  const m = meta[id];
+  const ln = i18n[currentLang];
+  
+  const displayName = m.names[currentLang] || m.names['en'];
+  let displayType = ln.typeRaw;
+  if (m.type === 'mid') displayType = ln.typeMid;
+  if (m.type === 'fin') displayType = ln.typeFin;
+
+  document.getElementById('info-title').textContent = displayName + (qty > 1 ? ` (x${qty})` : '');
+  document.getElementById('info-type').textContent  = displayType;
+  
+  const prodEl = document.getElementById('info-prod');
+  if (m.prodRate) {
+    prodEl.style.display = 'block';
+    
+    let consumeHtml = '';
+    if (m.consumes) {
+      consumeHtml = `<br><span style="margin-top:6px; display:inline-block; color:var(--mucha-gold); font-weight:600;">${ln.totalConsume}:</span>`;
+      for (const [inputId, amount] of Object.entries(m.consumes)) {
+        const inputName = meta[inputId]?.names[currentLang] || meta[inputId]?.names['en'] || inputId;
+        consumeHtml += `<br><span>· ${inputName}: </span>${(amount * qty).toLocaleString()}/${ln.hour}`;
+      }
+    }
+    
+    prodEl.innerHTML = `<span>${ln.metaProd}: </span>${m.prodRate.toLocaleString()}/${ln.hour}<br><span>${ln.metaTotal}: </span> ${(m.prodRate * qty).toLocaleString()}/${ln.hour}${consumeHtml}`;
+  } else {
+    prodEl.style.display = 'none';
+  }
+
+  const calcList = document.getElementById('info-calc-list');
+  calcList.innerHTML = '';
+  
+  if (!m.prodRate) {
+    calcList.innerHTML = `<div style="color:var(--text-dim);font-style:italic;text-align:center;">${ln.rawTips}</div>`;
+  } else {
+    const upstreamModules = calculateDemands(id, qty);
+    const upIds = Object.keys(upstreamModules);
+
+    if (!upIds.length) {
+      calcList.innerHTML = `<div style="color:var(--text-dim);font-style:italic;text-align:center;">${ln.noSub}</div>`;
+    } else {
+      upIds.forEach(uid => {
+        const row = document.createElement('div');
+        row.className = 'calc-row';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = meta[uid]?.names[currentLang] || meta[uid]?.names['en'] || uid;
+        
+        const numSpan = document.createElement('span');
+        numSpan.className = 'calc-num';
+        
+        const reqVal = parseFloat(upstreamModules[uid]);
+        const recVal = Math.ceil(reqVal);
+        numSpan.textContent = `${ln.need}:${upstreamModules[uid]} → ${ln.rec}:${recVal}`;
+        
+        row.appendChild(nameSpan);
+        row.appendChild(numSpan);
+        calcList.appendChild(row);
+      });
+    }
+  }
+
+  document.getElementById('info').classList.add('vis');
+  document.getElementById('reset').classList.add('vis');
+}
+
+document.querySelectorAll('.node').forEach(n => {
+  n.addEventListener('click', (e) => {
+    e.stopPropagation();
+    select(n.id);
+  });
+});
+
+window.addEventListener('click', (e) => {
+  if (!e.target.closest('.node') && !e.target.closest('#info') && !e.target.closest('#reset') && !e.target.closest('#lang-container')) {
+    resetAll();
+  }
+});
+
+function init() { 
+  setTimeout(drawEdges, 80); 
+  updateUILabels();
+}
+
+window.addEventListener('resize', () => {
+  drawEdges();
+  if (sel) { const t = sel; sel = null; select(t); }
+});
+init();
+</script>
+</body>
+</html>
