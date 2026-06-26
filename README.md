@@ -12,6 +12,6 @@ Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Free t
 3. Open it in any browser — no installation needed
 
 ## For Hosting
-If you deploy this online, please leave a comment on the [Reddit post](你的Reddit帖子链接) so others can find the live link.
+If you deploy this online, please leave a comment on the [Reddit post](https://www.reddit.com/r/X4Foundations/comments/1u84v42/comment/os7znsf/) so others can find the live link.
 
 PS: Tested on Chrome (Windows 10 / macOS). Please use Chrome to open this file.
